@@ -16,12 +16,37 @@ Dual Enrollment programs offer high school students the opportunity to explore c
 
 ## Data
 
-* Census Data - included in data folder
+The data were collected from 3,484 high school students enrolled in the OnRamps Precalculus course for the 2017-2018 academic year. Students completed a survey before the course began that consisted of 14 items related to motivationa beliefs and leanring goals, and 14 items related to sense of belonging. The results of this survey were stored in the Beginning of Year Assessment data file (BOCA). Information regarding student’s open- ended responses to the sentiment analysis quesiton, as well as student’s open-ended responses to their intended major question, are stored in this file.
+
 
 ## Cleaning Notes
- * Data are generated from a random sample of census tracts obtained in the city of Los Angeles in the year 2009. The sample includes 509 tracts of the over 2000 existing tracts in the city. Included in the data are 509 observations of 7 predictor variables: street total, median income, proportion vacant, proportion minority, percent residential, percent commercial, and percent industrial. Four observations are missing from the data, all of which are observations for the Proportion Vacant variable among 4 unique tracts (tracts 10, 445, 501, and 502). Three of these tracts also have a 100% minority count and all four of these tracts have a median income of 0. Given that these four unique tracts have these similarities on other variables, we infer that the Proportion Vacant was coded as NA for reasons that do not warrant removing these observations. It may be the case that these tracts are locations of prisons, or factories, rather than places of residence, and that these reasons led to the Proportion Vacant variable to be coded as NA.
- * A coding error in the variable for Proportion Minority is addressed. One value is 100.0, or 100,00%, instead of 1.0. These values are changed and recorded to address this issue. An additional coding peculiarity is addressed. The Percent Industrial variable contains many observations that have no numerical value, indicating that no percentage of these tracts are zoned for industrial enterprises. We create a new binary variable to capture this feature of the data, titled “Industrial” which is coded at 0 or 1 to distinguish between residential and industrial locations.
- * Five of the variables are skewed right, and a few large values bring the mean upwards, leaving the median unaffected. In the case of Street Total, Proportion Vacant, Percent Commercial, and Percent Industrial, the mean is larger than the median and some high tract information drags the mean upwards. This pattern is less for Median Income, but still prevalent. The other two variables, Proportion of Minority and Percent Residential, differ. Proportion Minority looks to have a bimodal distribution, and percent residential looks slightly skewed left, meaning that some tracts being the mean down. The correlation of variables with one another provides further insight. There is a moderate negative correlation between Proportion Minority and Median Income in the dataset at -0.51 (Figure 0.1). The next strongest correlation is between Percent Residential and Percent Industrial, which is also a negative correlation at -0.49. This makes sense thinking about the substance of the subject matter that contrives the data. None of the other variables show strong correlations.
+ * After that, we selected the variables of interest, which were Unit 1-3 Exam Data, Student ID, Grade, School, the answer to the question “I like to be challenged in class”, student’s self- reported intended major, student’s first and second exam intervention module choice, the click through rates for the modules, and the final UT grade given to students.
+
+ * Next, we removed any missing data values from the data, and then created a new variable that identified whether or not the students recieved credit for the course. As noted in the original explanation, the purpose of the OnRamps course to give crexit for a UT course depends on the final UT given grade, that it is over a 70%.
+ 
+ * To continue, we created unified variables of the mean score of Unit 1 through 3 grades for each Grade level (freshman through seniors) that students were in.
+Another way that we parsed that data was through the number of modules completed, giving us an opportunity to look at the differences in outcome scores based on the number of modules completed.
+To continue with sentiment analysis at a later time, we identified the text components of the quesiton “What does being an independent learner mean to you?”. This step required use of the tidytext package in R, which required that we munge the data into a specific structure in which the table has one-token-per-row, so that a meaningful unit of text, or a toke, can be analyzed and arranged. After organizing the data into the tidytext format, we gathered positive and negative sentiments from the “bing” lexicon, and joined them with the tidytext versions of our data, eventually using this newly joined data set to create visualizations of sentiments.
+
+```
+library(tidyverse) All_Data <- AllData %>%
+select(Student_ID, School, Grade, `I like to be challenged in my classes`, Unit_1_Exam, Unit_2_Exam, Unit_3_Exam_, NumberModules.clicked., UT_Average) % >%
+mutate(credit = ifelse(UT_Average > 70, "Credit", "No Credit"), Grade = as.factor(Grade)) %>%
+rename("Credit Outcome" = credit) %>% filter(!is.na(Grade),
+!is.na(Unit_1_Exam), !is.na(Unit_2_Exam),
+!is.na(Unit_3_Exam_), !is.na(NumberModules.clicked.))
+
+All_Data_grouped <- All_Data %>%
+select(Grade, Unit_1_Exam, Unit_2_Exam, Unit_3_Exam_, NumberModules.clicked
+.) %>% group_by(Grade) %>%
+summarise(N= n(),
+"Average Score Unit 1" = mean(Unit_1_Exam), sd_Unit1 = sd(Unit_1_Exam),
+"Average Score Unit 2" = mean(Unit_2_Exam), sd_Unit2 = sd(Unit_2_Exam),
+"Average Score Unit 3"= mean(Unit_3_Exam_), sd_Unit3 = sd(Unit_3_Exam_))
+is.factor(All_Data_grouped$Grade) ## [1] TRUE
+levels(All_Data_grouped$Grade) <- c("Freshman (9th)", "Sophomore (10th)", "Ju nior (11th)", "Senior (12th)")
+
+```
 
 
 
@@ -34,119 +59,35 @@ Dual Enrollment programs offer high school students the opportunity to explore c
 
 
 
-## How it Works
+## Associative Analysis
+
+We wrote a function to run graphs of distribution of exam scores based on students' intended college major
 
 ```
-
-#set seed at 4000
-# Bring in data and create initial training and test datasets
-set.seed(4000)
-df <- homeless
-index <- sample(1:nrow(df), (nrow(df))/2, replace = F) 
-Train <- na.omit(df[index,]) # Training data
-Test <- na.omit(df[-index,]) # Test data
-##coming to the right model:
-library(leaps)
-All1 <- regsubsets(StreetTotal ~ MedianIncome + PropMinority +
-                     PropVacant+
-                     PctResidential+
-                     PCTIndustrial +
-                     PctCommercial +
-                     Industrial, data = Train)
-# All1
-# summary(All1)
-
-Model2 <- lm(StreetTotal ~  
-               PropVacant+
-               Industrial +
-               (PropVacant:Industrial), data = Train)
-# summary(Model2)
-
-## Generalization error ##
-# Specify a model on the testing data 
-Model2 <- lm(StreetTotal ~  
-               PropVacant+
-               Industrial +
-               (PropVacant:Industrial), data = Test)
-# summary(Model2)
-#estimate the fitted values on the testing data, and the generalization error
-preds <- predict(Model2, newdata = Test) # New fitted values derived from the test data
-GE <- var(Test$StreetTotal - preds) # Estimate of generalization error (the variance of the residuals when 
-# GE
-# sqrt(GE)
-# Bootstrap a confidence interval for the generalization error 
-bootstrap_genError <-
-  function(x) {
-    bootstrapped_genErrors <- 0
-    for (i in 1:1000) {
-      index <- sample(1:nrow(x), nrow(x), replace = T)
-      sample_Test <- x[index,]
-      sample_Test_preds <- predict(Model2, newdata = sample_Test)
-      bootstrapped_genErrors[i] <- var(sample_Test$StreetTotal - sample_Test_preds)
-    }
-    return(bootstrapped_genErrors)
-  }
-
-bootstrap_results_ge <- bootstrap_genError(Test)
-
-# Check generalization error bootstrap results
-# mean(bootstrap_results_ge, na.rm = T)
-# summary(bootstrap_results_ge)
-# hist(bootstrap_results_ge, breaks = 20) 
-# qqnorm(bootstrap_results_ge)
-# sd(bootstrap_results_ge)
-# quantile(bootstrap_results_ge, probs = c(.025,.975))
-# plot(density(bootstrap_results_ge))
-# qqnorm(bootstrap_results_ge)
-#use robust sandwich standard errors in the sandwich package
-# install.packages("sandwich")
-library(sandwich)
-# vcovHC(Model2, type = "HC")
-# sandwich_se <- diag(vcovHC(Model2, type = "HC1"))
-# sqrt(sandwich_se)
-#then can get the confidence interval limits of these
-# coef(Model2) - 1.96*sandwich_se
-# coef(Model2) + 1.96*sandwich_se
-
-library(gam)
-library(mgcv)
-library(leaps)
-
-homeless2 <- homeless %>%
-  filter(MedianIncome > 60000 & PropVacant < .10)
-
-##MODEL 1
-out3 <- gam(StreetTotal ~
-              s(PCTIndustrial) +
-              s(PctCommercial) +
-              s(PropVacant) +
-              s(MedianIncome), data = homeless, family = gaussian)
-# summary(out3)
-par(mfrow=c(2,2))
-# plot(out3, residual = T, cex = 1, pch = 19, shade = T, shade.col = "light blue",
-#      col = "#FAD7A0")
-library(mgcViz)
-b<- getViz(out3)
-o <- plot( sm(b, 1) )
-# o + l_fitLine(colour = "#FAD7A0") + l_rug(mapping = aes(x=x, y=y), alpha = 0.9) +
-#   l_ciLine(mul = 5, colour = "light blue", linetype = 2) +
-#   l_points(shape = 19, size = 1, alpha = 0.7, color = "light blue") + theme_classic()
-
-
+#Create a function that takes in the major, and the data, and returns a graph of the distribution of Average UT Exam scores
+graphlabels <- c("Freshman", "Sophomores", "Juniors", "Seniors") library(ggpubr)
+function_graph <- function(major, data) {
+box <- ggboxplot(data, x= "Grade", y = "UT_Average", color = "Grade", palet te = "lancet") +
+theme(text = element_text(size = 8)) + labs( y = "UT Average") + scale_x_discrete(labels = graphlabels) +
+theme(axis.text.x = element_text(color = "black", size = 8, angle = 30, v just = .8, hjust = 0.8)) +
+theme(legend.position = "none")
+dot <- ggdotplot(data, x= "Grade", y = "UT_Average", color = "Grade", palett e = "lancet", binwidth = 2, dotsize = 0.9) +
+theme(text = element_text(size = 8)) + labs( y = "UT Average") +
+scale_x_discrete(labels = graphlabels) +
+theme(axis.text.x = element_text(color = "black", size = 8, angle = 30, v
+just = .8, hjust = 0.8)) + theme(legend.position = "none")
+figure_function <- ggarrange(box, dot) figure_function <- figure_function %>%
+annotate_figure(figure_function,
+top = text_grob(major, color = "blue", face = "bold"))
+}
+#Run the function in different major's data
+graph_bio <- function_graph("Biology", biodat)
+graph_bio
 ```
 
-## Model Evaluation
+## Regression Analyses
 
-1. Our first gam model (Model 1.0) includes the variables Percent Industrial, Percent Commercial, and Proportion Vacant. This model, and others that were chosen through a backward elimination of insignificant predictors, share undesirable measures of GCV and explain a modest proportion of deviance at 35.9%. Since all of the variables have effective degrees of freedom greater than 1.0, this indicates that the partial response functions are nonlinear. For instance, the partial response function is relatively flat until over half of a tract is zoned for industrial purposes. The error bands are not too large during this increase period, so this increase should be considered. 
-The graphs show that certain trends in homeless counts are correlated. It makes subject matter sense that land use variables are significantly associated with higher counts of homeless people, the less that land is zoned for industrial or commercial properties, or the more that lots are left vacant, the higher counts of homeless. However, we also saw from the outlier analysis and skewed distributions that certain larger groups of homeless congregate in areas that do not necessarily fit these trends. If the goal is predicting, then understanding these outliers is key. The tails give us useful information. For instance, in the Percent Commercial variable, visualized in Figure 1.1, the partial response function is relatively flat until over half of a tract is zoned for commercial purposes. Of note, though, is how the error band widens as the percent zoned for commercial increases. This indicates that there are fewer observations, and perhaps the decrease should not be taken too thoughtfully. The Proportion Vacant variable also shows a small increase in the count of homeless as tracts report more vacancy, and the error bands widen for tracts with greater vacancy, of which we have less observations for. The lessons from this first model show that certain predictors seem to be associated with counts of homeless, but that uncertainty occurs in the outliers of these variables.
-
-2. The next group of models surveyed include smoothing parameters and interaction effects. Based on the use of our data, we were interested in some predictors fitting curves more than others. Altering the smoothing parameter of Proportion Vacant allows us to fit the curve tighter. Ideally, we would like more complexity for those variables that predict homelessness stronger, and less complexity for those that do not predict as effectively. In the bias variance tradeoff framework, choosing the fit based on a variable like proportion of vacant, which may be a changing variable, given the structure of residential dwellings in Los Angeles and the changing structure of vacancies, could be of interest to future researchers. However, regardless of the smoothing parameter used, we failed to find a much better fit. 
-This second model (Model 2.0) makes use of these smoothing parameters and includes an interaction term for Median Income and Proportion Minority, two variables that have a stronger correlation (Figure 2.1), increases the deviance explained to 41%. However, scholars note that interaction terms may lack substantive sense (Berk 2008). Here, where our land use variables are more associated with homelessness, of which are highly skewed and outliers are present, focusing on the interactions may cloud the interpretation. Importantly, while interaction terms and smoothing parameters together may increase the deviance explained, these models are often too complicated to make sense in subject matter terms and interpreting the coefficients and interaction effects would be an arguably heady yet futile endeavor that little matters to the research task at hand.
-
-3. The final approach we used in model selection was to use more insight upfront about how the data would act (Wood 2017). Our initial approaches of a hugely flexible model using automatic selection methods left out an important subject matter call: splitting homeless counts by quartiles could provide new information. Model 3.0 shows the results of this approach. Splitting the model up by quartile increases the fit statistics up to over 57% of deviance explained. This model implies that increases in the homeless count, or the effect of variables on predicting homeless, is augmented by the street total of the homeless population within them. For instance, visualizing the gam curves in Figure 3.1 shows an increase in the count of homeless in the fourth quartile of Street Count for both the variables of Proportion Vacant and Industrial, and the jump in the value of the effective degrees of freedom (EDF) for these quartiles compliment this trend. 
-One can infer that the homeless concentrate in locations. This makes subject matter sense, thinking about shared communities and shared resources that the homeless rely on. It may be relatively harder to live on one’s own and be homeless, but perhaps the shared communities that those who are homeless create with each other incentivize the homeless to congregate together in areas. In fact, the interpretation of this final model is also informed by the work of the “boots on the ground” researchers and survey collectors who count the homeless. Homelessness may not be so much of a one-off phenomenon, but perhaps a pattern that is more reminiscent of congregation and community forming among people who are homeless.
-
-
+The regression model above investigates whether the relationship between average final score and number of modules clicked is moderated by the school grade level. By looking at the summary of the regression model presented above, only for sophomores the relationship between the average final score and number of modules clicked is significantly moderated by the grade level (B = 5.661, t(6) = 2.492, p <.05).
 
 ## Evaluation
 
