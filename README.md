@@ -89,13 +89,6 @@ The regression model above investigates whether the relationship between average
 ## Sample
 
 <p align="center">
-<img src="https://github.com/katjanewilson/OnRamps_Evaluation/blob/master/images/graph1.png"
-  alt="Size Limit comment in pull request about bundle size changes"
-  width="500" height="300">
-</p>
-
-
-<p align="center">
 <img src="https://github.com/katjanewilson/OnRamps_Evaluation/blob/master/images/graph2.png"
   alt="Size Limit comment in pull request about bundle size changes"
   width="500" height="300">
