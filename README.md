@@ -89,10 +89,24 @@ graph_bio
 
 The regression model above investigates whether the relationship between average final score and number of modules clicked is moderated by the school grade level. By looking at the summary of the regression model presented above, only for sophomores the relationship between the average final score and number of modules clicked is significantly moderated by the grade level (B = 5.661, t(6) = 2.492, p <.05).
 
-## Evaluation
+## Sample
 
 <p align="center">
-<img src="https://github.com/katjanewilson/LosAngelesCensusTracts/blob/master/images/gam_image.png"
+<img src="https://github.com/katjanewilson/OnRamps_Evaluation/blob/master/images/graph1.png"
+  alt="Size Limit comment in pull request about bundle size changes"
+  width="500" height="300">
+</p>
+
+
+<p align="center">
+<img src="https://github.com/katjanewilson/OnRamps_Evaluation/blob/master/images/graph2.png"
+  alt="Size Limit comment in pull request about bundle size changes"
+  width="500" height="300">
+</p>
+
+
+<p align="center">
+<img src="https://github.com/katjanewilson/OnRamps_Evaluation/blob/master/images/graph3.png"
   alt="Size Limit comment in pull request about bundle size changes"
   width="500" height="300">
 </p>
