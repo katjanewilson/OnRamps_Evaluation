@@ -1,12 +1,10 @@
 # OnRamps
 Dual Enrollment programs offer high school students the opportunity to explore college curricula and earn college credit before graduation. With a large number of students participating in these programs each year in the state of Texas, researchers have the comfort of a large sample size and the opportunity to ethically randomize interventions. We evaluate how changes in growth mindset influence sense of belonging, course completion, and inclination to pursue STEM fields for a large cohort (10,000 students).
 
-## Table of Contents
-
 <p align="center">
 <img src="https://github.com/katjanewilson/OnRamps_Evaluation/blob/master/images/logo.png"
   alt="Size Limit comment in pull request about bundle size changes"
-  width="486" height="189">
+  width="500" height="300">
 </p>
 
 
@@ -52,9 +50,8 @@ levels(All_Data_grouped$Grade) <- c("Freshman (9th)", "Sophomore (10th)", "Ju ni
 
 ## Packages
 
-* [gam](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf)
-* [mgc](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf)
-* [mgcViz](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf)
+* [tidyverse](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf)
+* [tidytext](https://cran.r-project.org/web/packages/randomForest/randomForest.pdf)
 
 
 
