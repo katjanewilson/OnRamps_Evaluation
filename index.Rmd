@@ -7,7 +7,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction
+## Introduction
 
 OnRamps is an innovative dual-enrollment program offered by the University of Texas at Austin. Students who enroll in OnRamps courses are enrolled in two classes, one that is taught by their high school teacher, and one that is taught by a university faculty. Assignments are graded by both the high school teacher and the faculty members at the University of Texas. Assignments recieve both a university grade that can be transferred for college credit, and a high school grade. 10,000 high school students participated in the program in the 2017-2018 academic year, and the majority were first-generation, low-income students, or students of color.
 
@@ -31,14 +31,6 @@ In this paper, we examine the following questions
 3. What are the characteristics of student's response to the question "What does being an indpendent learner mean to you?" in the BOCA?
 4. What are the characteristics of students intended majors and how their intended majors vary with exam performance and module completion?
 
-
-
-## Methods
-
-In order to analyze the data in this project, both visualization and inference statistical techniques will be used. The first two research questions will require linear regression techniques to answer. Since the second question revolves around a binary outcome, then logistic regression will be used.
-
-The third and fourth research questions are exploratory research questions, and will be answered using visualization techniques and exploratory techniques of the data. The third research question requires sentiment analysis, or the process of computationally identifying opinions expressed in a piece of text in order to determine the participant's attitude towards a topic. This project will use the "bing" lexicon adapted from Bing Liu and collaborators. This lexicon categorizes words in a binary fashion into positive and negative categories. The fourth research question requires an exporatory analysis of visualizations to compare students who identified a certain major for the quesiton "What is your intended major"?
-
 ## Data
 
 The data were collected from 3,484 high school students enrolled in the OnRamps Precalculus course for the 2017-2018 academic year. Students completed a survey before the course began that consisted of 14 items related to motivationa beliefs and leanring goals, and 14 items related to sense of belonging. The results of this survey were stored in the Beginning of Year Assessment data file (BOCA). Information regarding student's open-ended responses to the sentiment analysis quesiton, as well as student's open-ended responses to their intended major question, are stored in this file.
@@ -47,22 +39,11 @@ Second, after first exam scores were released, students were sent an email from 
 
 Lastly, students Unit 1, Unit 2, Unit 3, and Final Grades were collected throughout the semester. These grades are stored in the "Grades" file.
 
-## Data preparation and analysis
 
-The first step in our data preperation was to merge the files. OnRamps accumulated information from 3,484 high school students enrolled in the OnRamps Precalculus course for the 2017-2018 academic year. The files we merged together included the Beginning of Year Assessment (BOCA), First Exam Intervention (FEA), and the Unit Exam Grades (Grades). Merging these together created one data file, labelled "All Data" that was more managable for analysis.
+## Takeaways
 
-After that, we selected the variables of interest, which were Unit 1-3 Exam Data, Student ID, Grade, School, the answer to the question "I like to be challenged in class", student's self-reported intended major, student's first and second exam intervention module choice, the click through rates for the modules, and the final UT grade given to students.
-
-Next, we removed any missing data values from the data, and then created a new variable that identified whether or not the students recieved credit for the course. As noted in the original explanation, the purpose of the OnRamps course to give crexit for a UT course depends on the final UT given grade, that it is over a 70%. 
-
-To continue, we created unified variables of the mean score of Unit 1 through 3 grades for each Grade level (freshman through seniors) that students were in.
-
-Another way that we parsed that data was through the number of modules completed, giving us an opportunity to look at the differences in outcome scores based on the number of modules completed.
-
-To continue with sentiment analysis at a later time, we identified the text components of the quesiton "What does being an independent learner mean to you?". This step required use of the tidytext package in R, which required that we munge the data into a specific structure in which the table has one-token-per-row, so that a meaningful unit of text, or a toke, can be analyzed and arranged. After organizing the data into the tidytext format, we gathered positive and negative sentiments from the "bing" lexicon, and joined them with the tidytext versions of our data, eventually using this newly joined data set to create visualizations of sentiments.
-
-Finally, we identified specific majors that students self-reported on their BOCA surveys. We pulled out what students identified as their majors of choice. Since this was an exploratory step in the data analysis, hopefully for future questions to be asked, we were interested here in the numbers of students that listed a certain word in their major of choice. Thus, we created new data sets for students that listed popular majors as their intended major. Of course, the limitations of this approach are discussed extensively in the limitations section. 
-
+* The regression model above investigates whether the relationship between average final score and number of modules clicked is moderated by the school grade level. By looking at the summary of the regression model presented above, only for sophomores the relationship between the average final score and number of modules clicked is significantly moderated by the grade level (B = 5.661, t(6) = 2.492, p <.05).
+* Visualizations of Number of Modules clicked
 
 ```{r, out.width=400, echo=F}
 knitr::include_graphics("images/graph1.png")
@@ -78,7 +59,25 @@ knitr::include_graphics("images/graph3.png")
 
 
 
-# Markdown Code
+
+## Code
+
+
+## Data Cleaning
+
+The first step in our data preperation was to merge the files. OnRamps accumulated information from 3,484 high school students enrolled in the OnRamps Precalculus course for the 2017-2018 academic year. The files we merged together included the Beginning of Year Assessment (BOCA), First Exam Intervention (FEA), and the Unit Exam Grades (Grades). Merging these together created one data file, labelled "All Data" that was more managable for analysis.
+
+After that, we selected the variables of interest, which were Unit 1-3 Exam Data, Student ID, Grade, School, the answer to the question "I like to be challenged in class", student's self-reported intended major, student's first and second exam intervention module choice, the click through rates for the modules, and the final UT grade given to students.
+
+Next, we removed any missing data values from the data, and then created a new variable that identified whether or not the students recieved credit for the course. As noted in the original explanation, the purpose of the OnRamps course to give crexit for a UT course depends on the final UT given grade, that it is over a 70%. 
+
+To continue, we created unified variables of the mean score of Unit 1 through 3 grades for each Grade level (freshman through seniors) that students were in. Another way that we parsed that data was through the number of modules completed, giving us an opportunity to look at the differences in outcome scores based on the number of modules completed. To continue with sentiment analysis at a later time, we identified the text components of the quesiton "What does being an independent learner mean to you?". This step required use of the tidytext package in R, which required that we munge the data into a specific structure in which the table has one-token-per-row, so that a meaningful unit of text, or a toke, can be analyzed and arranged. After organizing the data into the tidytext format, we gathered positive and negative sentiments from the "bing" lexicon, and joined them with the tidytext versions of our data, eventually using this newly joined data set to create visualizations of sentiments.
+
+Finally, we identified specific majors that students self-reported on their BOCA surveys. We pulled out what students identified as their majors of choice. Since this was an exploratory step in the data analysis, hopefully for future questions to be asked, we were interested here in the numbers of students that listed a certain word in their major of choice. Thus, we created new data sets for students that listed popular majors as their intended major. 
+
+
+
+## Import and Merge
 Merge the three files (BOCA, Grades, and FEI) together into one file using the merge function. Rename this new data set as "All Data". Use the dimensions function to check if the data from each merged correctly.
 ```{r eval=FALSE, message=FALSE, include=TRUE, echo=TRUE}
 
@@ -115,6 +114,11 @@ All_Data <- AllData %>%
          !is.na(Unit_3_Exam_),
          !is.na(NumberModules.clicked.))
 ```
+
+
+
+## Data Cleaning
+
 Create a new dataset, titled "All_Data_grouped" that groups by Grade, and summarises the average exam scores (for Units 1-3) and the standard deviation of each exam score (for Units 1-3). Recode the Grade variable as factors so that the data appears in order of Freshman, Sophomore, Juniors, Seniors.
 ```{r eval=FALSE, message=FALSE, include=TRUE, echo=TRUE}
 
@@ -263,9 +267,8 @@ englishdat <- major_identifier("English", Intended_Study)
 
 
 
+## Visualizations
 
-
-# Visualizations
 
 ```{r eval=FALSE, message=FALSE, include=TRUE, echo=TRUE}
 levels(All_Data$Grade) <- c("Freshman (9th)", "Sophomore (10th)", "Junior (11th)", "Senior (12th)")
@@ -459,7 +462,8 @@ graph_english
 
 Figures 6 used a function to create two graphs for each intended major of students. The graphs show the distribution of exam scores for studets who identified one of the chosen words in their description of their intendend major for college.
 
-#Statistical Analysis
+
+## Statistical Analysis
 First regression is a regression of engagement related to overal students Unit 1,2,3, and End of Year Exam performance.
 ```{r eval=FALSE, message=FALSE, include=TRUE, echo=TRUE}
 
@@ -489,4 +493,3 @@ interact_plot(regression5, pred = NumberModules.clicked., modx = Grade)
 The regression model above investigates whether the relationship between average final score and number of modules clicked is moderated by the school grade level. By looking at the summary of the regression model presented above, only for sophomores the relationship between the average final score and number of modules clicked is significantly moderated by the grade level (B = 5.661, t(6) = 2.492, p <.05).
 
 Moreover, the interaction plot shows the trend in final average score change due to the number of modules clicked for each grade level. This plot shows the interaction between grade levels and number of modules clicked clearly. 
-
